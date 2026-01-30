@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+
+# Dataset (CIFAR-10 is downloaded here)
+data/
+
+# Model checkpoints (Large binary files)
+*.pt
+*.pth
+
+# System files
+.DS_Store
+Thumbs.db
