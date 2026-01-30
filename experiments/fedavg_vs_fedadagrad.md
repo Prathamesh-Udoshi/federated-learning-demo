@@ -24,6 +24,10 @@ We track two key metrics over 5 rounds of simulation:
 *   **FedAvg**: Demonstrated steady, stable convergence throughout the training rounds.
 *   **FedAdagrad**: Although FedAdagrad initially converged faster than FedAvg, it became unstable after round 3, with evaluation loss increasing sharply. This behavior is attributed to accumulated noisy gradients at the server and sensitivity to learning rate. In contrast, FedAvg demonstrated more stable convergence.
 
+### Anomalous "Correctness" in Instability
+An interesting phenomenon was observed during manual testing: despite FedAdagrad having higher loss and instability, it correctly classified a difficult test image (a cat) that both the Centralized Model and FedAvg misclassified as a Frog.
+*   **Hypothesis**: The adaptive boosting of rare features (e.g., pointed ears) in FedAdagrad may have preserved specific signal detectors that were "averaged out" in FedAvg, even while the overall model decision boundary became noisy. This highlights the "Loss vs. Accuracy" disconnect—a high-loss model can still be right on specific instances due to high uncertainty/entropy spreading.
+
 ### Implementation Insight
 *   **Initialization**: FedOpt strategies require explicit initialization of global model parameters, unlike FedAvg, which can lazily initialize from a client. This reflects the need for optimizer state tracking at the server side.
 

@@ -22,11 +22,12 @@ except ImportError:
 
 DEVICE = torch.device("cpu")
 
-def get_evaluate_fn(testloader):
+def get_evaluate_fn(testloader, model_name="federated_model.pt"):
     """
     Return an evaluation function for server-side evaluation.
     This runs after every round to check the global model's performance on held-out data.
     """
+    print(f"Preparing evaluation function to save model to {model_name}...")
     def evaluate(
         server_round: int,
         parameters: fl.common.NDArrays,
@@ -63,6 +64,11 @@ def get_evaluate_fn(testloader):
         # Print metrics for the user to see progress
         print(f"--- Round {server_round} eval: Loss {avg_loss:.4f}, Accuracy {accuracy:.4f}")
         
+        # Save the global model
+        if server_round > 0: # Avoid saving initial random model unless desired
+            torch.save(net.state_dict(), model_name)
+            # print(f"Saved global model to {model_name}")
+        
         return avg_loss, {"accuracy": accuracy}
 
     return evaluate
@@ -83,7 +89,8 @@ def get_strategy(strategy_name: str, testloader: DataLoader):
     # fraction_fit=1.0 means sample 100% of available clients for training (simulating small cohort)
     # min_fit_clients=2 means at least 2 clients participate per round
     
-    evaluate_fn = get_evaluate_fn(testloader)
+    model_name = f"federated_model_{strategy_name}.pt"
+    evaluate_fn = get_evaluate_fn(testloader, model_name=model_name)
     
     if strategy_name.lower() == "fedavg":
         # FedAvg: The baseline aggregation strategy. Average weights weighted by number of samples.

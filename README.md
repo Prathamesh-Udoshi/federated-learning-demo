@@ -1,8 +1,8 @@
 # Federated Learning Demo with CIFAR-10
 
-Welcome to the **Federated Learning Demo**! This project is an educational showcase designed to introduce you to the concepts of Federated Learning (FL) using **PyTorch** and **Flower (Flwr)**. 
+This project is an educational showcase designed to introduce you to the concepts of Federated Learning (FL) using **PyTorch** and **Flower (Flwr)**. 
 
-Targeted at developers and students, this repository demonstrates how to move from traditional "Centralized" machine learning to a privacy-preserving "Decentralized" approach.
+This repository demonstrates how to move from traditional "Centralized" machine learning to a privacy-preserving "Decentralized" approach.
 
 ---
 
@@ -98,7 +98,11 @@ python federated_training/run_simulation.py
 After running the simulation, check `plots/accuracy_vs_round.png`.
 
 *   **Convergence Speed**: Federated Learning typically converges slower than centralized training because the optimizer takes "steps" based on averaged weights rather than pure gradients, and data is often non-IID.
-*   **Stability**: FedAdagrad showed initial fast convergence but became unstable after round 3 in this experiment. This highlights the sensitivity of server-side adaptive optimizers to hyperparameter tuning (learning rate) compared to the robust FedAvg.
+*   **Stability**   **FedAdagrad**: Although FedAdagrad initially converged faster than FedAvg, it became unstable after round 3, with evaluation loss increasing sharply. This behavior is attributed to accumulated noisy gradients at the server and sensitivity to learning rate. In contrast, FedAvg demonstrated more stable convergence.
+
+### Anomalous "Correctness" in Instability
+An interesting phenomenon was observed during manual testing: despite FedAdagrad having higher loss and instability, it correctly classified a difficult test image (a cat) that both the Centralized Model and FedAvg misclassified as a Frog.
+*   **Hypothesis**: The adaptive boosting of rare features (e.g., pointed ears) in FedAdagrad may have preserved specific signal detectors that were "averaged out" in FedAvg, even while the overall model decision boundary became noisy. This highlights the "Loss vs. Accuracy" disconnect—a high-loss model can still be right on specific instances due to high uncertainty/entropy spreading.dAvg model missed. This suggests that adaptive optimizers might preserve rare feature signals (avoiding the "averaging out" effect) even when overall stability degrades.
 
 ### Key Takeaways
 1.  **FedOpt Initialization**: FedOpt strategies (like FedAdagrad) require explicit initialization of global parameters to track optimizer state, whereas FedAvg can initialize lazily.

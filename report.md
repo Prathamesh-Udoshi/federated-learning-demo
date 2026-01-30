@@ -1,11 +1,5 @@
 # Research Report: Comparative Analysis of Federated Learning Strategies on CIFAR-10
 
-**Author**: AI Assistant  
-**Date**: Jan 2026  
-**Topic**: Federated Learning Comparison (FedAvg vs. FedAdagrad)
-
----
-
 ## 1. Introduction
 Federated Learning (FL) enables collaborative model training without centralizing raw data. This report documents the implementation and evaluation of a simulated FL system using the Flower framework and PyTorch. The objective was to classify images from the CIFAR-10 dataset using a CPU-friendly Convolutional Neural Network (CNN) across 10 simulated clients.
 
@@ -45,7 +39,8 @@ A lightweight CNN was designed to ensure feasibility on CPU:
 
 ### FedAdagrad Performance
 *   **Observation**: FedAdagrad utilizes stored historical accumulators to adjust the server-side learning rate.
-*   **Trajectory**: In this experiment, FedAdagrad initially converged faster than FedAvg but became unstable after round 3, with evaluation loss increasing sharply. This behavior is attributed to accumulated noisy gradients at the server and higher sensitivity to the learning rate (`eta`).
+*   **Trajectory**: In this experiment, FedAdagrad initially converged faster than FedAvg but became unstable after round 3, with evaluation loss increasing sharply.
+*   **Anomaly**: Despite high loss, FedAdagrad correctly classified certain edge cases (e.g., Cat vs Frog) that FedAvg missed. This suggests that adaptive methods may retain distinct feature detectors for rare classes better than simple averaging, at the cost of overall noise.
 
 ## 6. Observations
 1.  **Communication vs. Computation**: The bottleneck in simulation was the sequential training of clients (due to single CPU). In a real deployment, clients train in parallel, making communication the bottleneck.
